@@ -1,0 +1,99 @@
+##########################################################################
+#SCALA Logfile GROK Patterns
+##########################################################################
+#
+# v1.0 	7/1/14 	Doug McClure 	Generic Receiver Basic
+# v1.1 	7/3/14	Doug McClure	Unity Application Basic
+# v1.2  7/4/14 	Doug McClure	Unity EIF Receiver Basic
+# v1.3 	7/10/14	Doug McClure	solr.log
+# v1.4 	7/11/14	Doug McClure	ManangeSolrnodes.log
+# v1.5  7/11/14	Doug McClure	zookeeper.out
+#
+##########################################################################
+
+########################
+#  Common Log Pattern  #
+########################
+
+LALOGMSGALL (?m)%{LALOGMSGCOMMON} %{GREEDYDATA:logMessage}
+LALOGMSGCOMMON %{LATIMESTAMP:timestampOrig}\s*\[%{LATHREAD:threadID}\]\s*%{LALOGLEVEL:logLevel}\s*-\s*%{LAPROCESS:processName}\s*:\s*
+LATIMESTAMP %{DATE_US} %{TIME} %{TZ}
+LATHREAD %{DATA}
+LALOGLEVEL %{LOGLEVEL}
+LAPROCESS %{DATA}
+
+########################
+#      solr.log        #
+########################
+
+#WARN  - 2014-09-22 22:07:32.460;
+SOLRGENERIC %{WORD:logLevel}\s+-\s+%{TIMESTAMP_ISO8601:timestampOrig};
+SOLRALL (?m)%{SOLRGENERIC}\s+%{GREEDYDATA:logMessage}
+
+#########################
+#  ManagedSolrnodes.log #
+#########################
+
+#2014-12-05 07:59:49,356 DEBUG [Utility.java:367]: Executing local command /opt/scala/driver/solr-4.7.1/scripts/solr_cmd.sh -status
+MANAGESOLRNODETS ^%{TIMESTAMP_ISO8601:timestampOrig}
+MANAGESOLRNODEALL (?m)%{MANAGESOLRNODETS}\s+%{WORD:logLevel}\s+\[%{DATA:processName}\]:\s+%{GREEDYDATA:logMessage}
+
+#########################
+#     zookeeper.out     #
+#########################
+
+#2014-12-05 07:59:41,504 [myid:] - INFO  [main:QuorumPeerConfig@101] - Reading configuration from: /opt/scala/driver/zookeeper-3.4.5/bin/../conf/zoo.cfg
+ZOOKEEPERTS ^%{TIMESTAMP_ISO8601:timestampOrig}
+ZOOKEEPERALL (?m)%{ZOOKEEPERTS}\s+\[%{DATA:ID}\]\s+-\s+%{WORD:logLevel}\s+\[%{DATA:processName}\]\s+-\s+%{GREEDYDATA:logMessage}
+
+#######################
+# GenericReceiver.log #
+#######################
+# Specific patterns for LAPROCESS types - some of these may only be available in debug mode
+
+# Annotator
+# SystemTAnnotatorWrapper
+# JsonPath
+# Utils
+# UnityIndexer
+# WorkQueue
+# DocumentProcessorThread
+
+# DataCollectorRestServlet  (this processName contains GR batch stat log messages)
+DCRS (?m)Index record POST Result:\s+%{GREEDYDATA:postResult}
+BATCHSTATUS (?m)Batch Status for\s+->\s+%{DATA:collectionName}\s+,\s+Size:\s+%{NUMBER:batchSize}\s+,\s+Num successful:\s+%{NUMBER:numberSuccessful}\s+,\s+Num failures:\s+%{NUMBER:numberFailures}\s+,\s+Indexed Source volume:\s+%{NUMBER:indexedSourceVolume}
+
+########################
+# UnityApplication.log #
+########################
+
+# Specific patterns for LAPROCESS types - some of these may only be available in debug mode
+#StatisticsTrackerManager
+#StatusReaper
+#SearchQueryMonitor
+#JAXRSUnitySearchServlet
+#SearchQueryRunner
+#Unity(Unknown Source)
+
+#SolrSearchQuery (query and app messages)
+NUMRSLT Query\s+%{NUMBER:queryNumber},\s+num Results:\s+%{NUMBER:queryResults}
+TOTRSLT Query\s+%{NUMBER:queryNumber},\s+total Results:\s+%{NUMBER:totalResults}
+SEARCHTIME Query\s+%{DATA:queryNumber},\s+search Time:\s+%{NUMBER:queryTime}
+QUERY Solr search query:\s+%{GREEDYDATA:query}
+FILTER Solr filter query:\s+%{DATA:datasource}\s+%{GREEDYDATA:timerange}
+FILTER2 Solr filter query:%{DATASOURCE2}%{GREEDYDATA:timerange}
+FILTERALL Solr filter query:%{DATASOURCEALL}%{GREEDYDATA:timerange}
+
+#could be many datasources - ideally have a pattern that matches any number and breaks out names
+DATASOURCE _datasource:"%{DATA}"
+DATASOURCE2 \s+\+\(%{DATASOURCE:datasource1} %{DATASOURCE:datasource2}\)
+DATASOURCEALL \s+\+\(%{GREEDYDATA:datasources}\)
+
+########################
+# UnityEIFReceiver.log #
+########################
+
+# Specific patterns for LAPROCESS types - some of these may only be available in debug mode
+
+#LogEventPoster
+#LogEventService

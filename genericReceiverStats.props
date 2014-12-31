@@ -1,0 +1,74 @@
+[SCALA_server]
+scalaHome: /opt/scala/driver
+
+[DSV_file]
+delimiter: ,
+totalColumns: 6
+aqlModuleName: genericReceiverStats
+version: 1.0.0.0
+
+[field0_indexConfig]
+name: logRecord
+dataType: TEXT
+retrievable: true
+retrieveByDefault: true
+sortable: false
+filterable: false
+searchable: true
+path_1: content.text
+combine: FIRST
+
+[field1_indexConfig]
+name: timestamp
+dataType: DATE
+dateFormat: MM/dd/yy HH:mm:ss:SSS z
+retrievable: true
+retrieveByDefault: true
+sortable: true
+filterable: true
+searchable: true
+
+[field2_indexConfig]
+name: collectionName
+dataType: TEXT
+retrievable: true
+retrieveByDefault: true
+sortable: true
+filterable: true
+searchable: true
+
+[field3_indexConfig]
+name: batchSize
+dataType: DOUBLE
+retrievable: true
+retrieveByDefault: true
+sortable: true
+filterable: true
+searchable: true
+
+[field4_indexConfig]
+name: numberSuccessful
+dataType: DOUBLE
+retrievable: true
+retrieveByDefault: true
+sortable: true
+filterable: true
+searchable: true
+
+[field5_indexConfig]
+name: numberFailures
+dataType: DOUBLE
+retrievable: true
+retrieveByDefault: true
+sortable: true
+filterable: true
+searchable: true
+
+[field6_indexConfig]
+name: indexedSourceVolume
+dataType: DOUBLE
+retrievable: true
+retrieveByDefault: true
+sortable: true
+filterable: true
+searchable: true
